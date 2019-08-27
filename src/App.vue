@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <ul class="elo-ranks">
-      <li v-for="team in eloRanks">
+      <li v-for="team in eloRanks" class="elo-ranks__rank">
         <div class="elo-ranks__team-name">
           {{ team.teamName }}
         </div>
@@ -13,6 +13,10 @@
         </div>
       </li>
     </ul>
+
+    <pre>
+      {{ eloRanks }}
+    </pre>
   </div>
 </template>
 
@@ -97,5 +101,26 @@ export default {
 </script>
 
 <style>
+  .elo-ranks__rank {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-areas:
+      "name elo"
+      "owner elo";
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem;
+    width: 600px;
+  }
 
+  .elo-ranks__team-name {
+    grid-area: name;
+  }
+
+  .elo-ranks__team-owner {
+    grid-area: owner;
+  }
+
+  .elo-ranks__elo {
+    grid-area: elo;
+  }
 </style>
