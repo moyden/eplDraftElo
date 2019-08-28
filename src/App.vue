@@ -30,6 +30,12 @@
         <div class="ranks__losses-title">
           L
         </div>
+        <div class="ranks__points-for-title">
+          PF
+        </div>
+        <div class="ranks__points-against-title">
+          PA
+        </div>
         <div class="ranks__points-title">
           Pts
         </div>
@@ -39,7 +45,7 @@
       </div>
 
       <ul class="ranks__table">
-        <li v-for="(team, index) in eloRanks" class="ranks__row">
+        <li v-for="(team, index) in eloRanks" v-bind:key="team.teamId" class="ranks__row">
           <div class="ranks__rank">
             {{ index + 1 }}
           </div>
@@ -55,6 +61,12 @@
           </div>
           <div class="ranks__losses">
             {{ team.actualLosses }}
+          </div>
+          <div class="ranks__points-for">
+            {{ team.pointsFor}}
+          </div>
+          <div class="ranks__points-against">
+            {{ team.pointsAgainst}}
           </div>
           <div class="ranks__points">
             {{ team.actualPoints }}
@@ -74,9 +86,7 @@
       </div>
     </div>
 
-    <div class="left-shadow">
-
-    </div>
+    <div class="left-shadow"></div>
   </div>
 </template>
 
@@ -84,10 +94,9 @@
 const d3 = require('d3')
 const _ = require('lodash')
 const numFormat = d3.format('.0f')
-const signedNum = d3.format('+.0f')
 const arrayLast = arr => arr[arr.length - 1]
 
-const bgs = ['I9HyW30buuQ', '-kML7I_SWhg', 'ObhCU6Vhoe8', '8-s5QuUBtyM', 'a-z2yFMFL74', 'jqUUBHKkwF4', 'MOnU_o4DMQw']
+const bgs = ['I9HyW30buuQ', 'ObhCU6Vhoe8', 'a-z2yFMFL74', 'jqUUBHKkwF4', 'MOnU_o4DMQw', 'PY7S04AJQNg']
 const choice = _.sample(bgs)
 d3.select('body').style('background-image', `url('https://source.unsplash.com/${choice}/1600x900')`)
 
@@ -142,11 +151,14 @@ export default {
 
       teams.forEach(t => {
         t.currentElo = numFormat(arrayLast(t.elo))
-        t.eloChange = signedNum(t.elo[t.elo.length - 1] - t.elo[t.elo.length - 2])
-        t.actualPoints = (t.actualWins * 3) + t.actualDraws
+        const standing = this.standings.find(s => s.league_entry === t.teamId)
+        t.rankSort = standing.rank_sort
+        t.actualPoints = standing.total
+        t.pointsFor = standing.points_for
+        t.pointsAgainst = standing.points_against
       })
 
-      return teams.sort((a, b) => d3.descending(a.currentElo, b.currentElo))
+      return teams.sort((a, b) => d3.ascending(a.rankSort, b.rankSort))
     }
   },
 
@@ -327,7 +339,11 @@ export default {
   .ranks__draws,
   .ranks__draws-title,
   .ranks__losses,
-  .ranks__losses-title {
+  .ranks__losses-title,
+  .ranks__points-for,
+  .ranks__points-for-title,
+  .ranks__points-against,
+  .ranks__points-against-title {
     display: none;
   }
 
@@ -335,7 +351,9 @@ export default {
   .ranks__draws,
   .ranks__losses,
   .ranks__points,
-  .ranks__elo {
+  .ranks__elo,
+  .ranks__points-for,
+  .ranks__points-against {
     box-shadow: inset .5rem 0 .8rem -.5rem rgb(217, 217, 217);
   }
 
@@ -385,17 +403,17 @@ export default {
     }
   }
 
-  @media all and (min-width: 600px) {
+  @media all and (min-width: 650px) {
     #app {
       height: 100vh;
     }
 
     .ranks__header {
-      grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+      grid-template-columns: 3rem 1fr repeat(6, 3rem) 3.5rem;
     }
 
     .ranks__row {
-      grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+      grid-template-columns: 3rem 1fr repeat(6, 3rem) 3.5rem;
     }
 
     .ranks__team-owner {
@@ -407,12 +425,16 @@ export default {
     .ranks__draws,
     .ranks__draws-title,
     .ranks__losses,
-    .ranks__losses-title {
+    .ranks__losses-title,
+    .ranks__points-for,
+    .ranks__points-for-title,
+    .ranks__points-against,
+    .ranks__points-against-title {
       display: block;
     }
   }
 
-  @media all and (min-width: 800px) {
+  @media all and (min-width: 950px) {
     #app {
       grid-template-columns: 1fr 2fr 2fr 1fr;
     }
@@ -426,7 +448,7 @@ export default {
     }
   }
 
-  @media all and (min-width: 1200px) {
+  @media all and (min-width: 1250px) {
     #app {
       grid-template-columns: repeat(4, 1fr);
     }
