@@ -1,63 +1,82 @@
 <template>
   <div id="app">
-    <ul class="elo-ranks">
-      <li class="elo-ranks__rank elo-ranks__rank--header">
-        <div class="elo-ranks__index">
+    <div class="ranks">
+      <div class="ranks__ddl-sport">
+        <span class="ddl-sport__ddl">
+          <span class="ddl-sport__square">D</span>
+          <span class="ddl-sport__square">D</span>
+          <span class="ddl-sport__square">L</span>
+        </span>
+        <span class="ddl-sport__sport">Sport</span>
+      </div>
+
+      <div class="ranks__title">
+        Meow Meow League
+      </div>
+
+      <div class="ranks__header">
+        <div class="ranks__rank-title">
+          Top
+        </div>
+        <div class="ranks__team-name-title">
 
         </div>
-        <div class="elo-ranks__team-name">
-          Team
-        </div>
-        <div class="elo-ranks__wins">
+        <div class="ranks__wins-title">
           W
         </div>
-        <div class="elo-ranks__draws">
+        <div class="ranks__draws-title">
           D
         </div>
-        <div class="elo-ranks__losses">
+        <div class="ranks__losses-title">
           L
         </div>
-        <div class="elo-ranks__pts">
+        <div class="ranks__points-title">
           Pts
         </div>
-        <div class="elo-ranks__elo">
+        <div class="ranks__elo-title">
           ELO
         </div>
-      </li>
+      </div>
 
-      <li v-for="(team, index) in eloRanks" class="elo-ranks__rank">
-        <div class="elo-ranks__index">
-          {{ index + 1 }}
-        </div>
-        <div class="elo-ranks__team-name">
-          {{ team.teamName }}
-        </div>
-        <div class="elo-ranks__team-owner">
-          {{ team.teamOwner }}
-        </div>
-        <div class="elo-ranks__wins">
-          {{ team.actualWins }}
-        </div>
-        <div class="elo-ranks__draws">
-          {{ team.actualDraws }}
-        </div>
-        <div class="elo-ranks__losses">
-          {{ team.actualLosses }}
-        </div>
-        <div class="elo-ranks__pts">
-          {{ team.actualPoints }}
-        </div>
-        <div class="elo-ranks__elo">
-          {{ team.currentElo }}
-        </div>
-        <div class="elo-ranks__elo-delta">
-          {{ team.eloChange }}
-        </div>
-      </li>
-    </ul>
-    <pre>
-      {{ eloRanks }}
-    </pre>
+      <ul class="ranks__table">
+        <li v-for="(team, index) in eloRanks" class="ranks__row">
+          <div class="ranks__rank">
+            {{ index + 1 }}
+          </div>
+          <div class="ranks__team-name">
+            {{ team.teamName }}
+            <span class="ranks__team-owner">{{ team.teamOwner }}</span>
+          </div>
+          <div class="ranks__wins">
+            {{ team.actualWins }}
+          </div>
+          <div class="ranks__draws">
+            {{ team.actualDraws }}
+          </div>
+          <div class="ranks__losses">
+            {{ team.actualLosses }}
+          </div>
+          <div class="ranks__points">
+            {{ team.actualPoints }}
+          </div>
+          <div class="ranks__elo">
+            {{ team.currentElo }}
+          </div>
+        </li>
+      </ul>
+
+      <div class="ranks__hashtag">
+        #meowmeowfootball
+      </div>
+
+      <div class="ranks__url">
+        <a href="https://draft.premierleague.com/league" target="_blank">premierleague.com/meowmeow</a>
+      </div>
+    </div>
+
+    <div class="left-shadow">
+
+    </div>
   </div>
 </template>
 
@@ -160,73 +179,182 @@ export default {
 </script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700,900&display=swap');
+
+  body {
+    background-image: url('https://source.unsplash.com/MOnU_o4DMQw/1600x900');
+    margin: 0;
+  }
+
   #app {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  }
-
-  .elo-ranks__rank {
-    /* align-items: center; */
+    align-items: center;
     display: grid;
-    grid-gap: 0 1rem;
-    grid-template-areas:
-      "rank name  wins draws losses points elo"
-      "rank owner wins draws losses points elo_d";
-    grid-template-columns: 3rem 1fr repeat(4, 4rem) 5rem;
+    font-family: 'Maven Pro', sans-serif;
+    grid-template-columns: repeat(4, 1fr);
+    height: 100vh;
+    justify-content: center;
     margin: auto;
-    padding: .5rem;
-    width: 800px;
+    width: 100vw;
   }
 
-  .elo-ranks__rank--header {
-    font-weight: bold;
+  .ranks {
+    display: grid;
+    grid-column: 2 / 4;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
   }
 
-  .elo-ranks__index {
-    grid-area: rank;
+  .ranks__ddl-sport {
+    background-color: rgb(252, 208, 46);
+    bottom: 0;
+    content: '';
+    display: grid;
+    font-weight: 600;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 1fr auto auto 1fr;
+    height: calc(8rem - 4px);
+    position: absolute;
+    right: 100%;
+    text-align: center;
+    width: calc(8.5rem - 4px);
+  }
+
+  .ddl-sport__square {
+    background-color: black;
+    color: rgb(252, 208, 46);
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1rem;
+    margin: .075rem;
+    padding: 0 .025rem .05rem;
+    width: 1rem;
+  }
+
+  .ddl-sport__ddl {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+  }
+
+  .ddl-sport__sport {
+    display: block;
+    font-size: 1.5rem;
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    text-transform: uppercase;
+  }
+
+  .ranks__title {
+    background-color: rgb(252, 208, 46);
+    border-color: rgb(253, 226, 136) transparent rgb(239, 199, 82);
+    border-style: solid;
+    border-width: 2px 0;
+    font-size: 1.8em;
+    font-weight: 600;
+    grid-column: span 2;
+    padding: .4em;
+    text-transform: uppercase;
+  }
+
+  .ranks__header {
+    background-color: rgb(218, 214, 200);
+    border-color: rgb(240, 238, 236) transparent rgb(203, 200, 192);
+    border-style: solid;
+    border-width: 1px 0;
+    display: grid;
+    grid-column: span 2;
+    grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    padding: .4em 0;
     text-align: center;
   }
 
-  .elo-ranks__team-name {
-    grid-area: name;
+  .ranks__table {
+    grid-column: span 2;
+    margin: 0;
+    padding: 0;
   }
 
-  .elo-ranks__team-owner {
-    align-self: end;
+  .ranks__row {
+    background-color: rgb(246, 247, 248);
+    display: grid;
+    grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    text-align: center;
+  }
+
+  .ranks__row:nth-child(even) {
+    background-color: rgb(241, 242, 243);
+  }
+
+  .ranks__row > div {
+    padding: .4rem 0;
+  }
+
+  .ranks__rank {
+    font-weight: 500;
+  }
+
+  .ranks__team-name {
+    font-weight: 500;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .ranks__team-owner {
     color: #666;
-    font-size: 0.85em;
-    grid-area: owner;
+    font-size: .75em;
+    font-weight: 400;
+    margin-left: .25em;
+    text-transform: none;
   }
 
-  .elo-ranks__wins {
-    grid-area: wins;
-    text-align: center;
-  }
-
-  .elo-ranks__draws {
-    grid-area: draws;
-    text-align: center;
-  }
-
-  .elo-ranks__losses {
-    grid-area: losses;
-    text-align: center;
-  }
-
-  .elo-ranks__pts {
-    grid-area: points;
-    text-align: center;
-  }
-
-  .elo-ranks__elo {
-    grid-area: elo;
-    text-align: center;
-  }
-
-  .elo-ranks__elo-delta {
-    align-self: end;
+  .ranks__row:hover .ranks__team-owner {
     color: #666;
-    font-size: 0.75em;
-    grid-area: elo_d;
-    text-align: center;
+  }
+
+  .ranks__wins,
+  .ranks__draws,
+  .ranks__losses,
+  .ranks__points,
+  .ranks__elo {
+    box-shadow: inset .5rem 0 .8rem -.5rem rgb(217, 217, 217);
+  }
+
+  .ranks__points {
+    font-weight: 500;
+  }
+
+  .ranks__hashtag {
+    background-color: rgb(252, 208, 46);
+    border-color: rgb(253, 226, 136) transparent rgb(239, 199, 82);
+    border-style: solid;
+    border-width: 1px 0;
+    font-size: .8em;
+    padding: .4rem .6rem;
+  }
+
+  .ranks__url {
+    background-color: rgb(252, 208, 46);
+    border-color: rgb(253, 226, 136) transparent rgb(239, 199, 82);
+    border-style: solid;
+    border-width: 1px 0;
+    font-size: .8em;
+    padding: .4rem .6rem;
+    text-align: right;
+  }
+
+  .ranks__url > a {
+    color: black;
+    text-decoration: none;
+  }
+
+  .left-shadow {
+    align-self: stretch;
+    background-color: transparent;
+    box-shadow: inset -2rem 0 3.2rem -2rem rgba(0, 0, 0, 0.5);
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    height: 100%;
+    position: absolute;
+    width: 25%;
   }
 </style>
