@@ -192,6 +192,7 @@ export default {
 
   body {
     background-size: cover;
+    height: 100vh;
     margin: 0;
   }
 
@@ -200,7 +201,7 @@ export default {
     display: grid;
     font-family: 'Maven Pro', sans-serif;
     grid-template-columns: 1fr;
-    height: 95vh;
+    height: 90vh;
     justify-content: center;
     margin: auto;
     width: 100%;
