@@ -200,7 +200,7 @@ export default {
     display: grid;
     font-family: 'Maven Pro', sans-serif;
     grid-template-columns: 1fr;
-    height: 100vh;
+    height: 95vh;
     justify-content: center;
     margin: auto;
     width: 100%;
@@ -385,6 +385,10 @@ export default {
   }
 
   @media all and (min-width: 600px) {
+    #app {
+      height: 100vh;
+    }
+
     .ranks__header {
       grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
     }
