@@ -82,9 +82,14 @@
 
 <script>
 const d3 = require('d3')
+const _ = require('lodash')
 const numFormat = d3.format('.0f')
 const signedNum = d3.format('+.0f')
 const arrayLast = arr => arr[arr.length - 1]
+
+const bgs = ['I9HyW30buuQ', '-kML7I_SWhg', 'ObhCU6Vhoe8', '8-s5QuUBtyM', 'a-z2yFMFL74', 'jqUUBHKkwF4', 'MOnU_o4DMQw']
+const choice = _.sample(bgs)
+d3.select('body').style('background-image', `url('https://source.unsplash.com/${choice}/1600x900')`)
 
 export default {
   name: 'app',
@@ -182,7 +187,7 @@ export default {
   @import url('https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700,900&display=swap');
 
   body {
-    background-image: url('https://source.unsplash.com/MOnU_o4DMQw/1600x900');
+    /* background-image: url('https://source.unsplash.com/MOnU_o4DMQw/1600x900'); */
     margin: 0;
   }
 
