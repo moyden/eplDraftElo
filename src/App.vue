@@ -184,10 +184,14 @@ export default {
 </script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700,900&display=swap');
+  @import url('https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700&display=swap');
+
+  html {
+    font-size: 14px;
+  }
 
   body {
-    /* background-image: url('https://source.unsplash.com/MOnU_o4DMQw/1600x900'); */
+    background-size: cover;
     margin: 0;
   }
 
@@ -195,16 +199,16 @@ export default {
     align-items: center;
     display: grid;
     font-family: 'Maven Pro', sans-serif;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr;
     height: 100vh;
     justify-content: center;
     margin: auto;
-    width: 100vw;
+    width: 100%;
   }
 
   .ranks {
     display: grid;
-    grid-column: 2 / 4;
+    grid-column: 1;
     grid-template-columns: 1fr 1fr;
     position: relative;
   }
@@ -213,7 +217,7 @@ export default {
     background-color: rgb(252, 208, 46);
     bottom: 0;
     content: '';
-    display: grid;
+    display: none;
     font-weight: 600;
     grid-template-columns: 1fr auto 1fr;
     grid-template-rows: 1fr auto auto 1fr;
@@ -268,7 +272,7 @@ export default {
     border-width: 1px 0;
     display: grid;
     grid-column: span 2;
-    grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    grid-template-columns: 3rem 1fr 3rem 3.5rem;
     padding: .4em 0;
     text-align: center;
   }
@@ -282,7 +286,7 @@ export default {
   .ranks__row {
     background-color: rgb(246, 247, 248);
     display: grid;
-    grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    grid-template-columns: 3rem 1fr 3rem 3.5rem;
     text-align: center;
   }
 
@@ -306,6 +310,7 @@ export default {
 
   .ranks__team-owner {
     color: #666;
+    display: none;
     font-size: .75em;
     font-weight: 400;
     margin-left: .25em;
@@ -314,6 +319,15 @@ export default {
 
   .ranks__row:hover .ranks__team-owner {
     color: #666;
+  }
+
+  .ranks__wins,
+  .ranks__wins-title,
+  .ranks__draws,
+  .ranks__draws-title,
+  .ranks__losses,
+  .ranks__losses-title {
+    display: none;
   }
 
   .ranks__wins,
@@ -356,10 +370,68 @@ export default {
     align-self: stretch;
     background-color: transparent;
     box-shadow: inset -2rem 0 3.2rem -2rem rgba(0, 0, 0, 0.5);
+    display: none;
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     height: 100%;
     position: absolute;
-    width: 25%;
+    width: 16.667%;
+  }
+
+  @media all and (min-width: 360px) {
+    html {
+      font-size: 16px;
+    }
+  }
+
+  @media all and (min-width: 600px) {
+    .ranks__header {
+      grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    }
+
+    .ranks__row {
+      grid-template-columns: 3rem 1fr repeat(4, 3rem) 3.5rem;
+    }
+
+    .ranks__team-owner {
+      display: inline;
+    }
+
+    .ranks__wins,
+    .ranks__wins-title,
+    .ranks__draws,
+    .ranks__draws-title,
+    .ranks__losses,
+    .ranks__losses-title {
+      display: block;
+    }
+  }
+
+  @media all and (min-width: 800px) {
+    #app {
+      grid-template-columns: 1fr 2fr 2fr 1fr;
+    }
+
+    .ranks {
+      grid-column: 2 / 4;
+    }
+
+    .left-shadow {
+      display: block;
+    }
+  }
+
+  @media all and (min-width: 1200px) {
+    #app {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .ranks__ddl-sport {
+      display: grid;
+    }
+
+    .left-shadow {
+      width: 25%;
+    }
   }
 </style>
