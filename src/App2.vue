@@ -17,6 +17,7 @@
           <th class="standings__header standings__lost">Lost</th>
           <th class="standings__header standings__fpts">+</th>
           <th class="standings__header standings__pts">Points</th>
+          <th class="standings__header standings__form">Form</th>
         </tr>
         <tr class="standings__header-row--mobile">
           <th class="standings__header standings__rank"></th>
@@ -27,6 +28,7 @@
           <th class="standings__header standings__lost">L</th>
           <th class="standings__header standings__fpts">+</th>
           <th class="standings__header standings__pts">Pts</th>
+          <th class="standings__header standings__form">Fm</th>
         </tr>
         <tr v-for="team in newStandings" v-bind:key="team.Rank" class="standings__team-row">
           <td class="standings__team standings__rank">{{ team.Rank }}</td>
@@ -37,8 +39,62 @@
           <td class="standings__team standings__lost">{{ team.L }}</td>
           <td class="standings__team standings__fpts">{{ team.FPts }}</td>
           <td class="standings__team standings__pts">{{ team.Pts }}</td>
+          <td class="standings__team standings__form">
+            <span v-for="result in team.Form" :class="[`form__result`, `form__result--${result}`]">{{ result }}</span>
+          </td>
         </tr>
       </table>
+
+      <div class="matches-switch">
+        <div @click="showScores" class="matches-switch__scores" :class="[ fixturesActive ? `` : `matches-switch__scores--active`]">
+          Scores & Results
+        </div>
+        <div @click="showFixtures" class="matches-switch__fixtures" :class="[ fixturesActive ? `matches-switch__fixtures--active` : ``]">
+          Fixtures
+        </div>
+      </div>
+
+      <div class="scores" :class="[ fixturesActive ? `` : `scores--active`]">
+        <ol class="scores__gameweeks">
+          <li v-for="gameweek in scores" class="scores__gameweek">
+            <div class="gameweek__header">
+              Gameweek {{ gameweek.gameweek }}
+            </div>
+            <ul class="gameweek__matches">
+              <li v-for="match in gameweek.games" class="gameweek__match" :class="[`gameweek__match--${match.Status}`]">
+                <div class="match__home-team">{{ match.homeTeam }}</div>
+                <div class="match__home-manager">{{ match.Home }}</div>
+                <div class="match__home-score">{{ match['Home Score'] }}</div>
+                <div class="match__away-team">{{ match.awayTeam }}</div>
+                <div class="match__away-manager">{{ match.Away }}</div>
+                <div class="match__away-score">{{ match['Away Score'] }}</div>
+                <div class="match__status">{{ match.Status === 'Complete' ? 'FT' : '' }}</div>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="fixtures" :class="[ fixturesActive ? `fixtures--active` : ``]">
+        <ol class="fixtures__gameweeks">
+          <li v-for="gameweek in fixtures" class="fixtures__gameweek">
+            <div class="gameweek__header">
+              Gameweek {{ gameweek.gameweek }}
+            </div>
+            <ul class="gameweek__matches">
+              <li v-for="match in gameweek.games" class="gameweek__match" :class="[`gameweek__match--${match.Status}`]">
+                <div class="match__home-team">{{ match.homeTeam }}</div>
+                <div class="match__home-manager">{{ match.Home }}</div>
+                <div class="match__home-score">{{ match['Home Score'] }}</div>
+                <div class="match__away-team">{{ match.awayTeam }}</div>
+                <div class="match__away-manager">{{ match.Away }}</div>
+                <div class="match__away-score">{{ match['Away Score'] }}</div>
+                <div class="match__status">{{ match.Status === 'Complete' ? 'FT' : '' }}</div>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
     </section>
   </div>
 </template>
@@ -46,9 +102,6 @@
 <script>
 const d3 = require('d3')
 const _ = require('lodash')
-// const numFormat = d3.format('.0f')
-// const signedNum = d3.format('+.0f')
-// const arrayLast = arr => arr[arr.length - 1]
 
 export default {
   name: 'app',
@@ -59,18 +112,20 @@ export default {
   data: function () {
     return {
       ogStandings: [],
-      fixtures: [],
+      matches: [],
+      fixturesActive: false
     }
   },
 
   computed: {
     newStandings: function () {
       const fixtureFilter = d => d.Status === "Complete"
-      const fixtures = this.fixtures.filter(fixtureFilter)
+      const fixtures = this.matches.filter(fixtureFilter)
       const standings = _.cloneDeep(this.ogStandings)
       const dict = {}
       standings.forEach(s => {
         dict[s.Manager] = s
+        s.Form = s.Form.split('')
       })
       fixtures.forEach(f => {
         let home = dict[f.Home]
@@ -80,14 +135,20 @@ export default {
           away.D += 1
           home.Pts += 1
           away.Pts += 1
+          home.Form = [...home.Form.slice(1, home.Form.length), 'D']
+          away.Form = [...away.Form.slice(1, away.Form.length), 'D']
         } else if (f['Home Score'] >= f['Away Score']) {
           home.W += 1
           away.L += 1
           home.Pts += 3
+          home.Form = [...home.Form.slice(1, home.Form.length), 'W']
+          away.Form = [...away.Form.slice(1, away.Form.length), 'L']
         } else {
           home.L += 1
           away.W += 1
           away.Pts += 3
+          home.Form = [...home.Form.slice(1, home.Form.length), 'L']
+          away.Form = [...away.Form.slice(1, away.Form.length), 'W']
         }
         home.FPts += f['Home Score']
         away.FPts += f['Away Score']
@@ -95,12 +156,34 @@ export default {
       standings.sort((a, b) => d3.descending(a.Pts, b.Pts) || d3.descending(a.FPts, b.FPts))
       standings.forEach((d, i) => d.Rank = i + 1)
       return standings
+    },
+
+    fixtures: function () {
+      const matches = this.matches.filter(m => m.Status === 'Scheduled')
+      const gameweeks = new Set(matches.map(m => m.Gameweek))
+      return [...gameweeks].map(gw => {
+        return {
+          gameweek: gw,
+          games: matches.filter(m => m.Gameweek === gw)
+        }
+      })
+    },
+
+    scores: function () {
+      const matches = this.matches.filter(m => m.Status === 'Active' || m.Status === 'Complete')
+      const gameweeks = [...new Set(matches.map(m => m.Gameweek))].sort((a, b) => d3.descending(a, b))
+      return gameweeks.map(gw => {
+        return {
+          gameweek: gw,
+          games: matches.filter(m => m.Gameweek === gw)
+        }
+      })
     }
   },
 
   methods: {
     fetchData: function () {
-      const ranges = d3.json(`https://sheets.googleapis.com/v4/spreadsheets/1_-dJPyOSfFklsO3rcHI9V2zMj6B-HksKKceRorSbDQ8/values:batchGet?ranges='Table @ Lockdown'!A1:I&ranges='Fixtures'!A1:F&majorDimension=ROWS&key=AIzaSyB9PQAdV0frspxEE0IUR7yRSBVxhV0LtEQ`)
+      const ranges = d3.json(`https://sheets.googleapis.com/v4/spreadsheets/1_-dJPyOSfFklsO3rcHI9V2zMj6B-HksKKceRorSbDQ8/values:batchGet?ranges='Table @ Lockdown'!A1:J&ranges='Fixtures'!A1:F&majorDimension=ROWS&key=AIzaSyB9PQAdV0frspxEE0IUR7yRSBVxhV0LtEQ`)
 
       ranges.then(data => {
         const promoteHeaders = data.valueRanges.map(range => {
@@ -117,9 +200,26 @@ export default {
           })
           return body
         })
+        const managers = promoteHeaders[0].reduce((a, c) => {
+          a[c.Manager] = c.Team
+          return a
+        }, {})
+        promoteHeaders[1].forEach(d => {
+          d.homeTeam = managers[d.Home]
+          d.awayTeam = managers[d.Away]
+        })
+        window.console.log(managers)
         this.ogStandings = promoteHeaders[0]
-        this.fixtures = promoteHeaders[1]
+        this.matches = promoteHeaders[1]
       })
+    },
+
+    showFixtures: function () {
+      this.fixturesActive = true
+    },
+
+    showScores: function () {
+      this.fixturesActive = false
     }
   },
 
@@ -190,7 +290,7 @@ body {
 .standings__header {
   background-color: rgb(242, 242, 240);
   border-bottom: 1px solid rgb(223,223,222);
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
   padding: 1.15em .3em .3em;
 }
@@ -225,13 +325,20 @@ body {
 }
 
 .standings__rank {
-  padding-left: .6em;
+  padding-left: 1em;
   text-align: left;
 }
 
 .standings__pts {
   font-weight: 700;
-  padding-right: .6em;
+  padding-right: 1em;
+}
+
+.standings__form {
+  border-left: 1px solid rgb(233, 233, 232);
+  display: none;
+  padding-left: 1em;
+  text-align: left;
 }
 
 .standings__won,
@@ -239,12 +346,148 @@ body {
 .standings__lost,
 .standings__fpts,
 .standings__pts {
-  width: 3em;
+  width: 2.75em;
 }
 
 .standings__fpts,
 .standings__played {
   display: none;
+}
+
+.form__result {
+  background-color: black;
+  color: white;
+  display: inline-block;
+  font-size: .8em;
+  height: 16px;
+  line-height: 16px;
+  margin-right: 2px;
+  text-align: center;
+  vertical-align: center;
+  width: 16px;
+}
+
+.form__result--W { background-color: rgb(68, 196, 36) }
+.form__result--L { background-color: rgb(221, 0, 0) }
+.form__result--D { background-color: rgb(90, 90, 90) }
+
+.matches-switch {
+  border: 1px solid rgb(233, 233, 232);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 2rem 0 1rem;
+}
+
+.matches-switch__scores,
+.matches-switch__fixtures {
+  cursor: pointer;
+  padding: 1em;
+  text-align: center;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.matches-switch__scores--active,
+.matches-switch__fixtures--active {
+  background-color: rgb(64, 64, 64);
+  color: rgb(255, 255, 255);
+}
+
+.scores,
+.fixtures {
+  display: none;
+  margin-top: 1rem;
+}
+
+.scores--active,
+.fixtures--active {
+  display: block;
+}
+
+.scores__gameweeks,
+.fixtures__gameweeks,
+.gameweek__matches {
+  list-style: none;
+  padding: 0;
+}
+
+.gameweek__header {
+  background-color: rgb(242, 242, 240);
+  font-size: .85em;
+  padding: .6em;
+  text-transform: uppercase;
+}
+
+.gameweek__match {
+  border-bottom: 1px solid rgb(233, 233, 232);
+  display: grid;
+  font-size: .9rem;
+  grid-gap: 1px;
+  grid-template-areas: "home-team    home-score away-score away-team"
+                       "home-manager status     status     away-manager";
+  grid-template-columns: 1fr 2.125em 2.125em 1fr;
+  margin: 1em 0;
+  padding-bottom: .5em;
+}
+
+.gameweek__match:last-child {
+  border-bottom: none;
+}
+
+.match__home-team { grid-area: home-team; }
+.match__home-manager { grid-area: home-manager; }
+.match__home-score { grid-area: home-score; }
+.match__away-team { grid-area: away-team; }
+.match__away-manager { grid-area: away-manager; }
+.match__away-score { grid-area: away-score; }
+.match__status { grid-area: status; }
+
+.match__home-team,
+.match__home-manager {
+  text-align: right;
+}
+
+.match__home-team,
+.match__away-team {
+  font-weight: 700;
+  line-height: 2.125em;
+  padding: 0 1rem;
+}
+
+.match__home-score,
+.match__away-score {
+  background-color: rgb(255, 210, 48);
+  font-weight: 700;
+  line-height: 2.125em;
+  max-height: 2.125em;
+  text-align: center;
+}
+
+.gameweek__match--Active .match__home-score,
+.gameweek__match--Active .match__away-score {
+  background-color: rgb(40, 102, 246);
+  color: rgb(255, 255, 255);
+}
+
+.gameweek__match--Scheduled .match__home-score,
+.gameweek__match--Scheduled .match__away-score {
+  background-color: rgb(219, 219, 219);
+  color: rgb(90, 90, 90);
+}
+
+.match__home-manager,
+.match__away-manager {
+  color: rgb(96, 96, 96);
+  font-size: .85em;
+  line-height: 2.125em;
+  padding: 0 1rem;
+}
+
+.match__status {
+  color: rgb(96, 96, 96);
+  font-size: .85em;
+  line-height: 2.125em;
+  text-align: center;
 }
 
 @media all and (min-width: 480px) {
@@ -277,6 +520,16 @@ body {
 
   .standings__fpts,
   .standings__played {
+    display: table-cell;
+  }
+
+  .gameweek__match {
+    font-size: 1rem;
+  }
+}
+
+@media all and (min-width: 800px) {
+  .standings__form {
     display: table-cell;
   }
 }
