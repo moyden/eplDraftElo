@@ -33,7 +33,7 @@
         <tr v-for="team in newStandings" v-bind:key="team.Rank" class="standings__team-row">
           <td class="standings__team standings__rank">{{ team.Rank }}</td>
           <td class="standings__team standings__team-name">
-            <a :href="`https://draft.premierleague.com/entry/${team.id}/event/${activeGameweek}`" target="_blank">{{ team.Team }}</a>
+            <a class="standings__team-link" :href="`https://draft.premierleague.com/entry/${team.id}/event/${activeGameweek}`" target="_blank">{{ team.Team }}</a>
             <span class="standings__manager">
               {{ team.Manager }}
             </span>
@@ -257,7 +257,6 @@ body {
 a {
   color: rgb(0, 0, 0);
   text-decoration: none;
-  vertical-align: middle;
 }
 
 a:hover {
@@ -337,6 +336,10 @@ a:hover {
 .standings__team-name {
   font-weight: 700;
   text-align: left;
+  vertical-align: middle;
+}
+
+.standings__team-link {
   vertical-align: middle;
 }
 
