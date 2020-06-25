@@ -7,6 +7,9 @@
       <div>Football <svg class="chevron" width="31.9" height="32" viewBox="0 0 31.9 32"><path d="M29 16L3 0v7.2L17.6 16 3 24.8V32z"></path></svg> Meow Meow League</div>
     </nav>
     <section class="page-content">
+      <div @click="toggleAsItStands" class="as-it-stands" :class="{ 'as-it-stands--active': asItStands }">
+        As It Stands
+      </div>
       <table class="standings">
         <tr class="standings__header-row--desktop">
           <th class="standings__header standings__rank"></th>
@@ -127,13 +130,16 @@ export default {
       ogStandings: [],
       matches: [],
       activeGameweek: null,
-      fixturesActive: false
+      fixturesActive: false,
+      asItStands: true
     }
   },
 
   computed: {
     newStandings: function () {
-      const fixtureFilter = d => d.Status === "Complete"
+      let fixtureFilter
+      if (this.asItStands) fixtureFilter = d => d.Status === "Complete" || d.Status === "Active"
+      else fixtureFilter = d => d.Status === "Complete"
       const fixtures = this.matches.filter(fixtureFilter)
       const standings = _.cloneDeep(this.ogStandings)
       const dict = {}
@@ -235,11 +241,19 @@ export default {
 
     showScores: function () {
       this.fixturesActive = false
+    },
+
+    toggleAsItStands: function () {
+      this.asItStands = !this.asItStands
     }
   },
 
   mounted: function () {
     this.fetchData()
+
+    setInterval(function () {
+      this.fetchData()
+    }.bind(this), 120000)
   }
 }
 </script>
@@ -300,6 +314,24 @@ a:hover {
   margin: auto;
   max-width: 800px;
   padding: 1rem;
+}
+
+.as-it-stands {
+  background-color: rgb(219, 219, 219);
+  color: rgb(90, 90, 90);
+  cursor: pointer;
+  display: inline-block;
+  font-size: .85em;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding: .25em .5em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.as-it-stands--active {
+  background-color: rgb(40, 102, 246);
+  color: rgb(255, 255, 255);
 }
 
 .standings {
