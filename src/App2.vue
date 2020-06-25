@@ -7,7 +7,7 @@
       <div>Football <svg class="chevron" width="31.9" height="32" viewBox="0 0 31.9 32"><path d="M29 16L3 0v7.2L17.6 16 3 24.8V32z"></path></svg> Meow Meow League</div>
     </nav>
     <section class="page-content">
-      <div @click="toggleAsItStands" class="as-it-stands" :class="{ 'as-it-stands--active': asItStands }">
+      <div v-if="matchesLive" @click="toggleAsItStands" class="as-it-stands" :class="{ 'as-it-stands--active': asItStands }">
         As It Stands
       </div>
       <table class="standings">
@@ -130,6 +130,7 @@ export default {
       ogStandings: [],
       matches: [],
       activeGameweek: null,
+      matchesLive: false,
       fixturesActive: false,
       asItStands: true
     }
@@ -232,6 +233,8 @@ export default {
         this.ogStandings = promoteHeaders[0]
         this.matches = promoteHeaders[1]
         this.activeGameweek = promoteHeaders[2][promoteHeaders[2].length - 1].Gameweek
+        const activeGameweekStatus = promoteHeaders[2][promoteHeaders[2].length - 1].Status
+        this.matchesLive = activeGameweekStatus === 'Active'
       })
     },
 
