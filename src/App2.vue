@@ -32,7 +32,12 @@
         </tr>
         <tr v-for="team in newStandings" v-bind:key="team.Rank" class="standings__team-row">
           <td class="standings__team standings__rank">{{ team.Rank }}</td>
-          <td class="standings__team standings__team-name">{{ team.Team }} <span class="standings__manager">{{ team.Manager }}</span></td>
+          <td class="standings__team standings__team-name">
+            <a :href="`https://draft.premierleague.com/entry/${team.id}/event/${activeGameweek}`" target="_blank">{{ team.Team }}</a>
+            <span class="standings__manager">
+              {{ team.Manager }}
+            </span>
+          </td>
           <td class="standings__team standings__played">{{ team.W + team.D + team.L }}</td>
           <td class="standings__team standings__won">{{ team.W }}</td>
           <td class="standings__team standings__drawn">{{ team.D }}</td>
@@ -62,10 +67,18 @@
             </div>
             <ul class="gameweek__matches">
               <li v-for="match in gameweek.games" class="gameweek__match" :class="[`gameweek__match--${match.Status}`]">
-                <div class="match__home-team">{{ match.homeTeam }}</div>
+                <div class="match__home-team">
+                  <a :href="`https://draft.premierleague.com/entry/${match['Home Id']}/event/${gameweek.gameweek + 9}`" target="_blank">
+                    {{ match.homeTeam }}
+                  </a>
+                </div>
                 <div class="match__home-manager">{{ match.Home }}</div>
                 <div class="match__home-score">{{ match['Home Score'] }}</div>
-                <div class="match__away-team">{{ match.awayTeam }}</div>
+                <div class="match__away-team">
+                  <a :href="`https://draft.premierleague.com/entry/${match['Away Id']}/event/${gameweek.gameweek + 9}`" target="_blank">
+                    {{ match.awayTeam }}
+                  </a>
+                </div>
                 <div class="match__away-manager">{{ match.Away }}</div>
                 <div class="match__away-score">{{ match['Away Score'] }}</div>
                 <div class="match__status">{{ match.Status === 'Complete' ? 'FT' : '' }}</div>
@@ -113,6 +126,7 @@ export default {
     return {
       ogStandings: [],
       matches: [],
+      activeGameweek: null,
       fixturesActive: false
     }
   },
@@ -183,7 +197,7 @@ export default {
 
   methods: {
     fetchData: function () {
-      const ranges = d3.json(`https://sheets.googleapis.com/v4/spreadsheets/1_-dJPyOSfFklsO3rcHI9V2zMj6B-HksKKceRorSbDQ8/values:batchGet?ranges='Table @ Lockdown'!A1:J&ranges='Fixtures'!A1:F&majorDimension=ROWS&key=AIzaSyB9PQAdV0frspxEE0IUR7yRSBVxhV0LtEQ`)
+      const ranges = d3.json(`https://sheets.googleapis.com/v4/spreadsheets/1_-dJPyOSfFklsO3rcHI9V2zMj6B-HksKKceRorSbDQ8/values:batchGet?ranges='Table @ Lockdown'!A1:K&ranges='Fixtures'!A1:H&ranges='Gameweek'!A1:B&majorDimension=ROWS&key=AIzaSyB9PQAdV0frspxEE0IUR7yRSBVxhV0LtEQ`)
 
       ranges.then(data => {
         const promoteHeaders = data.valueRanges.map(range => {
@@ -211,6 +225,7 @@ export default {
         window.console.log(managers)
         this.ogStandings = promoteHeaders[0]
         this.matches = promoteHeaders[1]
+        this.activeGameweek = promoteHeaders[2][promoteHeaders[2].length - 1].Gameweek
       })
     },
 
@@ -230,8 +245,6 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700&display=swap');
-
 html {
   font-size: 14px;
 }
@@ -239,6 +252,16 @@ html {
 body {
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, Ubuntu, roboto, noto, segoe ui, arial, sans-serif;
   margin: 0;
+}
+
+a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .page-header {
@@ -314,6 +337,7 @@ body {
 .standings__team-name {
   font-weight: 700;
   text-align: left;
+  vertical-align: middle;
 }
 
 .standings__manager {
