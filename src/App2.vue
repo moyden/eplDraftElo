@@ -36,7 +36,7 @@
         <tr v-for="team in newStandings" v-bind:key="team.Rank" class="standings__team-row">
           <td class="standings__team standings__rank">{{ team.Rank }}</td>
           <td class="standings__team standings__team-name">
-            <a class="standings__team-link" :href="`https://draft.premierleague.com/entry/${team.id}/event/${activeGameweek}`" target="_blank">{{ team.Team }}</a>
+            <a class="standings__team-link" :href="`https://draft.premierleague.com/entry/${team.id}/event/${activeGameweek}`" target="_blank" rel="noreferrer">{{ team.Team }}</a>
             <span class="standings__manager">
               {{ team.Manager }}
             </span>
@@ -71,14 +71,14 @@
             <ul class="gameweek__matches">
               <li v-for="match in gameweek.games" class="gameweek__match" :class="[`gameweek__match--${match.Status}`]">
                 <div class="match__home-team">
-                  <a :href="`https://draft.premierleague.com/entry/${match['Home Id']}/event/${gameweek.gameweek + 9}`" target="_blank">
+                  <a :href="`https://draft.premierleague.com/entry/${match['Home Id']}/event/${gameweek.gameweek + 9}`" target="_blank" rel="noreferrer">
                     {{ match.homeTeam }}
                   </a>
                 </div>
                 <div class="match__home-manager">{{ match.Home }}</div>
                 <div class="match__home-score">{{ match['Home Score'] }}</div>
                 <div class="match__away-team">
-                  <a :href="`https://draft.premierleague.com/entry/${match['Away Id']}/event/${gameweek.gameweek + 9}`" target="_blank">
+                  <a :href="`https://draft.premierleague.com/entry/${match['Away Id']}/event/${gameweek.gameweek + 9}`" target="_blank" rel="noreferrer">
                     {{ match.awayTeam }}
                   </a>
                 </div>
@@ -229,7 +229,6 @@ export default {
           d.homeTeam = managers[d.Home]
           d.awayTeam = managers[d.Away]
         })
-        window.console.log(managers)
         this.ogStandings = promoteHeaders[0]
         this.matches = promoteHeaders[1]
         this.activeGameweek = promoteHeaders[2][promoteHeaders[2].length - 1].Gameweek
